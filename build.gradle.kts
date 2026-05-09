@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.depik400"
-version = "1.0.0"  // лучше использовать семантическую версию без SNAPSHOT для релиза
+version = "1.1.2"  // лучше использовать семантическую версию без SNAPSHOT для релиза
 
 repositories {
     mavenCentral()
@@ -36,11 +36,11 @@ intellijPlatform {
     pluginConfiguration {
         name = "Kaiten Time Logger"
         ideaVersion {
-            sinceBuild = "251"
+            sinceBuild = "241.*"
             untilBuild = "259.*" // Ограничиваем версиями 2025.1
         }
         changeNotes = """
-            <h3>Version 1.0.0</h3>
+            <h3>Version 1.1.2</h3>
             <ul>
                 <li>Логирование времени в Kaiten</li>
                 <li>Авто-определение карточки из ветки</li>
@@ -73,8 +73,8 @@ tasks {
     }
 
     patchPluginXml {
-        sinceBuild.set("251")
-        untilBuild.set("251.*")
+        sinceBuild.set("241.*")
+        untilBuild.set("259.*")
     }
 
     runIde {
