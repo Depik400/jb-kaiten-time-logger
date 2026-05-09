@@ -73,7 +73,7 @@ class KaitenApiService(private val project: Project) {
             }
 
             override fun onResponse(call: Call, response: Response) {
-                val responseBody = response.body.string()
+                val responseBody = response.body?.string()
                 LOG.info("Response code: ${response.code}")
                 LOG.info("Response body: $responseBody")
 
