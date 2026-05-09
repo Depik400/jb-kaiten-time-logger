@@ -39,14 +39,7 @@
         </action>
     </actions>
 
-<!--    <projectListeners>-->
-<!--        <listener class="com.depik400.kaitentimelogger.listeners.GitCommitListener"-->
-<!--                  topic="git4idea.GitCommitEditorListener"/>-->
-<!--    </projectListeners>-->
-
-<!--    <application-components>-->
-<!--        <component>-->
-<!--            <implementation-class>com.depik400.kaitentimelogger.components.StartupComponent</implementation-class>-->
-<!--        </component>-->
-<!--    </application-components>-->
+    <extensions defaultExtensionNs="com.intellij">
+        <checkinHandlerFactory implementation="com.depik400.kaitentimelogger.listeners.CommitListenerFactory"/>
+    </extensions>
 </idea-plugin>

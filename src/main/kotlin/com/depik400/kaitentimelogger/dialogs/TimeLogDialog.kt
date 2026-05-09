@@ -13,7 +13,8 @@ import javax.swing.*
 
 class TimeLogDialog(
     project: Project?,
-    private val detectedCardId: Int?
+    private val detectedCardId: Int?,
+    private val commitMessage: String?
 ) : DialogWrapper(project) {
 
     // Модели и компоненты
@@ -70,6 +71,7 @@ class TimeLogDialog(
             commentArea = textArea()
                 .rows(5)
                 .align(AlignX.FILL)
+                .applyToComponent { text = commitMessage ?: ""}
                 .component
         }.topGap(TopGap.SMALL)
     }

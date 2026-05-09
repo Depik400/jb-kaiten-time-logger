@@ -22,7 +22,7 @@ class LogTimeAction : AnAction() {
 
             val cardId = BranchParser.extractCardId(branchName)
 
-            val dialog = TimeLogDialog(project, cardId)
+            val dialog = TimeLogDialog(project, cardId, "")
             if (dialog.showAndGet()) {
                 val data = dialog.getTimeLogData()
                 LOG.info("Logging time for card: ${data.cardId}")
@@ -53,5 +53,22 @@ class LogTimeAction : AnAction() {
             LOG.warn("Failed to get current branch", e)
             null
         }
+    }
+
+}
+
+fun openDialog(project: Project, detectedCardId: Int?, commitMessage: String?) {
+    val branchName = try {
+        val repositories = GitUtil.getRepositoryManager(project).repositories
+        repositories.firstOrNull()?.currentBranchName
+    } catch (e: Exception) {
+        null
+    }
+
+    val cardId = BranchParser.extractCardId(branchName)
+    val dialog = TimeLogDialog(project, detectedCardId ?: cardId, commitMessage)
+    if (dialog.showAndGet()) {
+        val data = dialog.getTimeLogData()
+        KaitenApiService.getInstance(project).sendTimeLog(data)
     }
 }
