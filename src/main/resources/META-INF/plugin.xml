@@ -1,0 +1,52 @@
+<idea-plugin>
+    <id>com.depik400.kaiten-time-logger</id>
+    <name>Kaiten Time Logger</name>
+    <vendor email="depik400@yandex.ru" url="https://github.com/Depik400">Depik400</vendor>
+
+    <description><![CDATA[
+    <h2>Kaiten Time Logger</h2>
+    <p>Логирование времени в Kaiten прямо из IntelliJ IDEA.</p>
+    <ul>
+        <li>Автоматическое определение карточки из названия ветки</li>
+        <li>Просмотр уже залогированного времени</li>
+        <li>Выбор роли из списка</li>
+        <li>Информация о пользователе</li>
+    </ul>
+    ]]></description>
+
+    <depends>com.intellij.modules.platform</depends>
+    <depends>Git4Idea</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <applicationService serviceImplementation="com.depik400.kaitentimelogger.services.SettingsService"/>
+        <projectService serviceImplementation="com.depik400.kaitentimelogger.services.KaitenApiService"/>
+
+        <applicationConfigurable
+                parentId="tools"
+                instance="com.depik400.kaitentimelogger.config.SettingsConfigurable"
+                id="com.depik400.kaitentimelogger.config.SettingsConfigurable"
+                displayName="Kaiten Time Logger"/>
+    </extensions>
+
+    <actions>
+        <action id="Kaiten.LogTime"
+                class="com.depik400.kaitentimelogger.actions.LogTimeAction"
+                text="Kaiten: Логировать время"
+                description="Логирование времени в Kaiten">
+            <add-to-group group-id="VcsGroups" anchor="first"/>
+            <add-to-group group-id="ToolsMenu" anchor="last"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt L"/>
+        </action>
+    </actions>
+
+<!--    <projectListeners>-->
+<!--        <listener class="com.depik400.kaitentimelogger.listeners.GitCommitListener"-->
+<!--                  topic="git4idea.GitCommitEditorListener"/>-->
+<!--    </projectListeners>-->
+
+<!--    <application-components>-->
+<!--        <component>-->
+<!--            <implementation-class>com.depik400.kaitentimelogger.components.StartupComponent</implementation-class>-->
+<!--        </component>-->
+<!--    </application-components>-->
+</idea-plugin>
