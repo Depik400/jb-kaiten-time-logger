@@ -37,7 +37,7 @@ intellijPlatform {
         name = "Kaiten Time Logger"
         ideaVersion {
             sinceBuild = "251"
-            untilBuild = "251.*" // Ограничиваем версиями 2025.1
+            untilBuild = "259.*" // Ограничиваем версиями 2025.1
         }
         changeNotes = """
             <h3>Version 1.0.0</h3>
