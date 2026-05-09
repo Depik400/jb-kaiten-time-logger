@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.depik400"
-version = "1.1.2"  // лучше использовать семантическую версию без SNAPSHOT для релиза
+version = "1.2.1"
 
 repositories {
     mavenCentral()
@@ -20,11 +20,7 @@ dependencies {
         create("IC", "2025.1.4.1")
         testFramework(org.jetbrains.intellij.platform.gradle.TestFrameworkType.Platform)
 
-        // Подключаем Git4Idea (если нужен доступ к git-репозиториям)
         bundledPlugin("Git4Idea")
-
-        // Если используете Java-модули, раскомментируйте:
-        // bundledPlugin("com.intellij.java")
     }
 
     // Сетевые запросы и JSON
@@ -37,13 +33,14 @@ intellijPlatform {
         name = "Kaiten Time Logger"
         ideaVersion {
             sinceBuild = "241.*"
-            untilBuild = "259.*" // Ограничиваем версиями 2025.1
+            untilBuild = "259.*"
         }
         changeNotes = """
-            <h3>Version 1.1.2</h3>
+            <h3>Version 1.2.1</h3>
             <ul>
                 <li>Логирование времени в Kaiten</li>
                 <li>Авто-определение карточки из ветки</li>
+                <li>Авто-вызов окна при коммите</li>
                 <li>Выбор роли</li>
             </ul>
         """.trimIndent()
@@ -78,7 +75,6 @@ tasks {
     }
 
     runIde {
-        // Если у вас локально установлена IDEA, можно указать путь
         // ideDir.set(file(System.getenv("IDEA_HOME")))
     }
 }
@@ -89,7 +85,6 @@ kotlin {
     }
 }
 
-// Чтобы избежать предупреждений о дублировании ресурсов
 java {
     sourceCompatibility = JavaVersion.VERSION_21
     targetCompatibility = JavaVersion.VERSION_21

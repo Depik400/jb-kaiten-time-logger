@@ -19,7 +19,6 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <applicationService serviceImplementation="com.depik400.kaitentimelogger.services.SettingsService"/>
-        <projectService serviceImplementation="com.depik400.kaitentimelogger.services.KaitenApiService"/>
 
         <applicationConfigurable
                 parentId="tools"
@@ -31,7 +30,7 @@
     <actions>
         <action id="Kaiten.LogTime"
                 class="com.depik400.kaitentimelogger.actions.LogTimeAction"
-                text="Kaiten: Логировать время"
+                text="Kaiten: Логировать Время"
                 description="Логирование времени в Kaiten">
             <add-to-group group-id="VcsGroups" anchor="first"/>
             <add-to-group group-id="ToolsMenu" anchor="last"/>

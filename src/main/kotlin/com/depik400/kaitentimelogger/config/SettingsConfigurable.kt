@@ -82,7 +82,6 @@ class SettingsConfigurable : Configurable {
             }
             add(resetButton, gbc)
 
-            // Информация
             gbc.gridy = 6
             add(JLabel("<html><small>Как получить API токен: Настройки Kaiten → API Токены</small></html>"), gbc)
         }

@@ -106,8 +106,6 @@ class KaitenApiService(private val project: Project) {
         })
     }
 
-// В KaitenApiService.kt добавить:
-
     fun getUserRoles(callback: (List<Role>) -> Unit) {
         val state = SettingsService.getInstance().getState()
         val baseUrl = state.baseUrl

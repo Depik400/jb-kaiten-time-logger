@@ -103,10 +103,6 @@ class TimeLogDialog(
         return null
     }
 
-    // ... методы doOKAction и getTimeLogData остаются прежними,
-    // используя ссылки на созданные выше компоненты
-
-
     override fun doOKAction() {
         val selectedRole = roleModel.selectedItem as? RoleItem
         selectedRole?.let {
@@ -114,8 +110,6 @@ class TimeLogDialog(
         }
         super.doOKAction()
     }
-
-    private fun getLocalDate(): String = LocalDate.now().toString()
 
     fun getTimeLogData(): TimeLogData {
         val timeValue = timeSpinner.value as Int
