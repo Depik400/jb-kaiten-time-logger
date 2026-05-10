@@ -7,6 +7,7 @@ import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
 import com.depik400.kaitentimelogger.models.TimeLogData
+import com.google.gson.annotations.SerializedName
 import com.intellij.openapi.application.ApplicationManager
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
@@ -106,6 +107,40 @@ class KaitenApiService(private val project: Project) {
         })
     }
 
+    fun getLoggedTime(cardId: Int, callback: (List<LoggedTime>) -> Unit) {
+        val state = SettingsService.getInstance().getState()
+        val baseUrl = state.baseUrl
+        val token = state.apiToken
+        if (baseUrl.isBlank() || token.isBlank()) {
+            callback(emptyList())
+            return
+        }
+        val url = "$baseUrl/api/latest/cards/${cardId}/time-logs?personal=true";
+        val request = Request.Builder()
+            .url(url)
+            .get()
+            .header("Authorization", "Bearer $token")
+            .build()
+
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                LOG.warn("Failed to load roles", e)
+                callback(emptyList())
+            }
+            override fun onResponse(call: Call, response: Response) {
+                val responseBody = response.body?.string()
+                try {
+                    callback(
+                        gson.fromJson(responseBody, Array<LoggedTime>::class.java).toList()
+                    )
+                } catch (e: Exception) {
+                    LOG.warn("Failed to parse roles", e)
+                    callback(emptyList())
+                }
+            }
+        })
+    }
+
     fun getUserRoles(callback: (List<Role>) -> Unit) {
         val state = SettingsService.getInstance().getState()
         val baseUrl = state.baseUrl
@@ -144,6 +179,20 @@ class KaitenApiService(private val project: Project) {
     }
 
     data class Role(val id: Int, val name: String, val uid: String? = null)
+
+    data class LoggedTime(
+        @SerializedName("updated") val updated: String,
+        @SerializedName("created") val created: String,
+        @SerializedName("id") val id: Int,
+        @SerializedName("card_id") val cardId: Int,
+        @SerializedName("user_id") val userId: Int,
+        @SerializedName("role_id") val roleId: Int,
+        @SerializedName("author_id") val authorId: Int,
+        @SerializedName("updater_id") val updaterId: Int,
+        @SerializedName("time_spent") val timeSpent: Int,
+        @SerializedName("for_date") val forDate: String,
+        @SerializedName("comment") val comment: String? = null
+    )
 
     companion object {
         fun getInstance(project: Project): KaitenApiService =

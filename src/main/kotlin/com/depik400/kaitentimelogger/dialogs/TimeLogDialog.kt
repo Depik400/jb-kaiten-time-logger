@@ -6,9 +6,12 @@ import com.depik400.kaitentimelogger.services.SettingsService
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.ui.SimpleListCellRenderer
+import com.intellij.ui.components.JBTextField
 import com.intellij.ui.dsl.builder.*
+import com.intellij.ui.table.JBTable
 import java.time.LocalDate
 import javax.swing.*
+import javax.swing.table.DefaultTableModel
 
 
 class TimeLogDialog(
@@ -24,6 +27,10 @@ class TimeLogDialog(
     private lateinit var timeSpinner: JSpinner
     private lateinit var timeUnitCombo: JComboBox<String>
     private lateinit var dateField: JTextField
+    private lateinit var timeTable: JBTable
+    private lateinit var tableModel: DefaultTableModel
+
+    private var debounceTimer: Timer? = null
 
     private val settings = SettingsService.getInstance()
     private val apiService = project?.let { KaitenApiService.getInstance(it) }
@@ -38,10 +45,18 @@ class TimeLogDialog(
     }
 
     override fun createCenterPanel(): JComponent = panel {
+        tableModel = DefaultTableModel(arrayOf(), arrayOf("Дата", "Время", "Комментарий"))
+        row {
+            timeTable = JBTable(tableModel)
+            scrollCell(timeTable)
+                .align(AlignX.FILL)
+        }.resizableRow()
+
         row("ID карточки:") {
             cardIdField = textField()
                 .columns(COLUMNS_MEDIUM)
                 .applyToComponent { text = detectedCardId?.toString() ?: "" }
+                .onChanged { onCardIdChanged(it) }
                 .component
         }
 
@@ -71,7 +86,7 @@ class TimeLogDialog(
             commentArea = textArea()
                 .rows(5)
                 .align(AlignX.FILL)
-                .applyToComponent { text = commitMessage ?: ""}
+                .applyToComponent { text = commitMessage ?: "" }
                 .component
         }.topGap(TopGap.SMALL)
     }
@@ -92,6 +107,45 @@ class TimeLogDialog(
                     findRoleById(savedId)?.let { roleModel.selectedItem = it }
                 }
             }
+        }
+    }
+
+    private fun onCardIdChanged(value: JBTextField): Unit {
+        debounceTimer?.stop()
+
+        val cardIDText = value.text
+        if (cardIDText.isBlank()) return;
+
+        debounceTimer = Timer(500) {
+            cardIDText.toIntOrNull()?.let {
+                apiService?.getLoggedTime(it) { list ->
+                    tableModel.setNumRows(0)
+                    for (item in list) {
+                        tableModel.addRow(
+                            arrayOf(
+                                item.forDate,
+                                formatTime(item.timeSpent),
+                                item.comment.toString()
+                            )
+                        )
+                    }
+                    timeTable.revalidate();
+                    timeTable.repaint()
+                }
+            }
+        }.apply {
+            isRepeats = false
+            start()
+        }
+    }
+
+    fun formatTime(minutes: Int): String {
+        val hours = minutes / 60
+        val mins = minutes % 60
+        return if (hours > 0) {
+            if (mins > 0) "${hours}ч ${mins}м" else "${hours}ч"
+        } else {
+            "${mins}м"
         }
     }
 
