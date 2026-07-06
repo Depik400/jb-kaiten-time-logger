@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.depik400"
-version = "1.2.3"
+version = "1.2.5"
 
 repositories {
     mavenCentral()
@@ -36,7 +36,7 @@ intellijPlatform {
             untilBuild = "262.*"
         }
         changeNotes = """
-            <h3>Version 1.2.1</h3>
+            <h3>Version 1.2.5</h3>
             <ul>
                 <li>Логирование времени в Kaiten</li>
                 <li>Авто-определение карточки из ветки</li>
@@ -71,7 +71,7 @@ tasks {
 
     patchPluginXml {
         sinceBuild.set("241.*")
-        untilBuild.set("259.*")
+        untilBuild.set("262.*")
     }
 
     runIde {
