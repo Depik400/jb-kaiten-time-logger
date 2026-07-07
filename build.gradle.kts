@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.depik400"
-version = "1.2.5"
+version = "1.2.6"
 
 repositories {
     mavenCentral()
@@ -36,7 +36,7 @@ intellijPlatform {
             untilBuild = "262.*"
         }
         changeNotes = """
-            <h3>Version 1.2.5</h3>
+            <h3>Version 1.2.6</h3>
             <ul>
                 <li>Логирование времени в Kaiten</li>
                 <li>Авто-определение карточки из ветки</li>

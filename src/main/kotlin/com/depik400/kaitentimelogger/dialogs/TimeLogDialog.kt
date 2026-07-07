@@ -6,6 +6,7 @@ import com.depik400.kaitentimelogger.services.SettingsService
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.ui.SimpleListCellRenderer
+import com.intellij.openapi.ui.Messages
 import com.intellij.ui.components.JBTextField
 import com.intellij.ui.dsl.builder.*
 import com.intellij.ui.table.JBTable
@@ -15,7 +16,7 @@ import javax.swing.table.DefaultTableModel
 
 
 class TimeLogDialog(
-    project: Project?,
+    private val project: Project?,
     private val detectedCardId: Int?,
     private val commitMessage: String?
 ) : DialogWrapper(project) {
@@ -42,6 +43,7 @@ class TimeLogDialog(
         roleModel.addElement(RoleItem(-1, "Employee (по умолчанию)"))
         init()
         loadRolesAsync()
+        loadLoggedTimeAsync(detectedCardId.toString())
     }
 
     override fun createCenterPanel(): JComponent = panel {
@@ -112,13 +114,22 @@ class TimeLogDialog(
 
     private fun onCardIdChanged(value: JBTextField): Unit {
         debounceTimer?.stop()
-
         val cardIDText = value.text
         if (cardIDText.isBlank()) return;
 
         debounceTimer = Timer(500) {
-            cardIDText.toIntOrNull()?.let {
-                apiService?.getLoggedTime(it) { list ->
+            loadLoggedTimeAsync(cardIDText)
+        }.apply {
+            isRepeats = false
+            start()
+        }
+    }
+
+    private fun loadLoggedTimeAsync(cardId: String) {
+        if (cardId.isBlank()) return;
+        cardId.toIntOrNull()?.let {
+            apiService?.getLoggedTime(it) { list ->
+                SwingUtilities.invokeLater {
                     tableModel.setNumRows(0)
                     for (item in list) {
                         tableModel.addRow(
@@ -133,9 +144,6 @@ class TimeLogDialog(
                     timeTable.repaint()
                 }
             }
-        }.apply {
-            isRepeats = false
-            start()
         }
     }
 
@@ -177,5 +185,33 @@ class TimeLogDialog(
             comment = commentArea.text,
             roleId = selectedRole?.id ?: -1
         )
+    }
+
+    private fun openCardInBrowser() {
+        val cardIdText = cardIdField.text
+        if (cardIdText.isBlank()) {
+            Messages.showWarningDialog(project, "Сначала укажите ID карточки", "Kaiten Time Logger")
+            return
+        }
+        val cardId = cardIdText.toIntOrNull()
+        if (cardId == null) {
+            Messages.showWarningDialog(project, "Некорректный ID карточки", "Kaiten Time Logger")
+            return
+        }
+
+        val baseUrl = settings.getState().baseUrl
+        if (baseUrl.isBlank()) {
+            Messages.showWarningDialog(project, "Не указан базовый URL в настройках", "Kaiten Time Logger")
+            return
+        }
+
+        // Формируем URL карточки (уточните правильный путь под ваш Kaiten)
+        val cardUrl = "$baseUrl/card/$cardId"
+        try {
+            java.awt.Desktop.getDesktop().browse(java.net.URI(cardUrl))
+        } catch (e: Exception) {
+            // Альтернативный способ через BrowserUtil (из IntelliJ Platform)
+            com.intellij.ide.BrowserUtil.browse(cardUrl)
+        }
     }
 }
